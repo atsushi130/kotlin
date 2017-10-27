@@ -20,6 +20,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.util.ArrayUtil
 import org.jetbrains.kotlin.backend.common.coroutineImplClassDescriptor
 import org.jetbrains.kotlin.backend.common.isBuiltInCoroutineContext
+import org.jetbrains.kotlin.backend.common.isBuiltInSuspendCoroutineUninterceptedOrReturn
 import org.jetbrains.kotlin.backend.common.isCoroutineImplDoResume
 import org.jetbrains.kotlin.builtins.BuiltInsPackageFragment
 import org.jetbrains.kotlin.codegen.*
@@ -495,6 +496,11 @@ abstract class InlineCodegen<out T: BaseExpressionCodegen>(
                 functionDescriptor.isBuiltInCoroutineContext() ->
                     return SMAPAndMethodNode(
                         createMethodNodeForCoroutineContext(functionDescriptor),
+                        SMAPParser.parseOrCreateDefault(null, null, "fake", -1, -1)
+                    )
+                functionDescriptor.isBuiltInSuspendCoroutineUninterceptedOrReturn() ->
+                    return SMAPAndMethodNode(
+                        createMethodNodeForSuspendCoroutineUninterceptedOrReturn(functionDescriptor, state.typeMapper),
                         SMAPParser.parseOrCreateDefault(null, null, "fake", -1, -1)
                     )
             }
